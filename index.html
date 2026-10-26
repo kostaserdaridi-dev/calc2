@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор компьютерных услуг</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .calc-container {
+            max-width: 450px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .radio-option, .checkbox-option {
+            font-weight: normal;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calc-container">
+    <h2>Калькулятор компьютерных услуг</h2>
+    <form id="calcForm">
+        
+        <!-- Пункт 1: Поле для ввода количества -->
+        <div class="form-group">
+            <label for="quantity">Количество устройств / ПК:</label>
+            <input type="number" id="quantity" value="1" min="1">
+        </div>
+
+        <!-- Выбор типа услуги радиокнопкой  -->
+        <div class="form-group">
+            <label>Тип компьютерной услуги:</label>
+            <label class="radio-option">
+                <input type="radio" name="serviceType" value="type1" checked> Диагностика ПК (1000 руб.)
+            </label>
+            <label class="radio-option">
+                <input type="radio" name="serviceType" value="type2"> Установка ПО (2000 руб.)
+            </label>
+            <label class="radio-option">
+                <input type="radio" name="serviceType" value="type3"> Чистка от пыли и замена термопасты (3000 руб.)
+            </label>
+        </div>
+
+        <!-- Выбор опции товара из списка  -->
+        <div id="optionsGroup" class="form-group hidden">
+            <label for="serviceOption">Выберите пакет ПО:</label>
+            <select id="serviceOption">
+                <option value="0">Базовый набор офисных программ (+0 руб.)</option>
+                <option value="500">Пакет для разработчика и графики (+500 руб.)</option>
+                <option value="1000">Полный пакет со спец. ПО (+1000 руб.)</option>
+            </select>
+        </div>
+
+        <!-- Выбор свойства товара чекбоксом -->
+        <div id="propertyGroup" class="form-group hidden">
+            <label>Дополнительное свойство:</label>
+            <label class="checkbox-option">
+                <input type="checkbox" id="serviceProperty" value="1500"> Срочный выезд мастера на дом (+1500 руб.)
+            </label>
+        </div>
+
+        <!-- Вывод итоговой стоимости -->
+        <div class="result">
+            Стоимость: <span id="totalPrice">1000</span> руб.
+        </div>
+
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const typePrices = {
+            type1: 1000,
+            type2: 2000,
+            type3: 3000
+        };
+
+        const form = document.getElementById('calcForm');
+        const quantityInput = document.getElementById('quantity');
+        const optionsGroup = document.getElementById('optionsGroup');
+        const serviceOption = document.getElementById('serviceOption');
+        const propertyGroup = document.getElementById('propertyGroup');
+        const serviceProperty = document.getElementById('serviceProperty');
+        const totalPriceEl = document.getElementById('totalPrice');
+
+        function updateCalculator() {
+            let quantity = parseInt(quantityInput.value);
+            if (isNaN(quantity) || quantity < 1) {
+
+
+quantity = 0;
+            }
+
+            const selectedType = form.elements['serviceType'].value;
+
+            if (selectedType === 'type1') {
+                optionsGroup.classList.add('hidden');
+                propertyGroup.classList.add('hidden');
+            } else if (selectedType === 'type2') {
+                optionsGroup.classList.remove('hidden');
+                propertyGroup.classList.add('hidden');
+            } else if (selectedType === 'type3') {
+                optionsGroup.classList.add('hidden');
+                propertyGroup.classList.remove('hidden');
+            }
+
+            let currentUnitPrice = typePrices[selectedType];
+
+            if (selectedType === 'type2') {
+                currentUnitPrice += parseInt(serviceOption.value);
+            }
+
+            if (selectedType === 'type3' && serviceProperty.checked) {
+                currentUnitPrice += parseInt(serviceProperty.value);
+            }
+
+            const total = currentUnitPrice * quantity;
+            totalPriceEl.textContent = total;
+        }
+
+        form.addEventListener('input', updateCalculator);
+        form.addEventListener('change', updateCalculator);
+
+        updateCalculator();
+    });
+</script>
+
+</body>
+</html>
